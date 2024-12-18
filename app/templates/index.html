@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Stock Average Price Calculator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Average Price Calculator</h1>
+        <form method="POST" class="form">
+            <div id="stock-inputs" class="inputs-container">
+                {% for stock in stocks %}
+                <div class="stock-row">
+                    <input type="number" name="price" placeholder="Enter Price ($)" value="{{ stock.price }}" step="0.01" required>
+                    <input type="number" name="quantity" placeholder="Enter Quantity" value="{{ stock.quantity }}" required>
+                    <button type="button" class="delete-row">Delete</button>
+                </div>
+                {% endfor %}
+                {% if not stocks %}
+                <div class="stock-row">
+                    <input type="number" name="price" placeholder="Enter Price ($)" step="0.01" required>
+                    <input type="number" name="quantity" placeholder="Enter Quantity" required>
+                    <button type="button" class="delete-row">Delete</button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="buttons">
+                <button type="button" class="add-button" id="add-stock-button">+ Add Stock</button>
+                <button type="submit" class="submit-button">Calculate</button>
+            </div>
+        </form>
+
+        {% if average_price is not none %}
+        <div class="result">
+            <h2>Results:</h2>
+            <p><strong>Average Price per Stock:</strong> ${{ "%.2f"|format(average_price) }}</p>
+            <p><strong>Total Units:</strong> {{ total_units }}</p>
+            <p><strong>Total Investment:</strong> ${{ "%.2f"|format(total_investment) }}</p>
+        </div>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
