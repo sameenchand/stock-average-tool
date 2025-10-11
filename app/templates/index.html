@@ -9,8 +9,21 @@
 <body>
     <div class="container">
         <h1>Stock Average Price Calculator</h1>
+        <div class="nav-buttons">
+            <a href="/" class="nav-button active">Average Calculator</a>
+            <a href="/profit-loss" class="nav-button">Profit/Loss Calculator</a>
+        </div>
+        
         <form method="POST" class="form">
+            <div class="input-type-indicator">
+                <button type="button" class="input-type-button active">Price & Quantity</button>
+            </div>
             <div id="stock-inputs" class="inputs-container">
+                <div class="column-headers">
+                    <div class="header-cell">Price ($)</div>
+                    <div class="header-cell">Quantity</div>
+                    <div class="header-cell-spacer"></div>
+                </div>
                 {% for stock in stocks %}
                 <div class="stock-row">
                     <input type="number" name="price" placeholder="Enter Price ($)" value="{{ stock.price }}" step="0.01" required>

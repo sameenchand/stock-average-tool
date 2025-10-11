@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Profit/Loss Calculator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Profit/Loss Calculator</h1>
+        <div class="nav-buttons">
+            <a href="/" class="nav-button">Average Calculator</a>
+            <a href="/profit-loss" class="nav-button active">Profit/Loss Calculator</a>
+        </div>
+        
+        <form method="POST" class="form">
+            <div class="input-type-selector">
+                <label class="radio-option">
+                    <input type="radio" name="input_type" value="price_quantity" {% if input_type == 'price_quantity' or input_type is not defined %}checked{% endif %}>
+                    <span>Price & Quantity</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="input_type" value="percentage_investment" {% if input_type == 'percentage_investment' %}checked{% endif %}>
+                    <span>% Change & Investment</span>
+                </label>
+            </div>
+            
+            <div class="input-sections">
+                <!-- Method 1: Price and Quantity -->
+                <div id="price-quantity-section" class="input-section" style="display: {% if input_type == 'price_quantity' or input_type is not defined %}block{% else %}none{% endif %};">
+                    <h3>Method 1: Price & Quantity</h3>
+                    <div class="input-group">
+                        <label for="buy_price">Buy Price ($):</label>
+                        <input type="number" id="buy_price" name="buy_price" placeholder="Enter buy price" step="0.01" value="{{ request.form.get('buy_price', '100') }}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" value="{{ request.form.get('quantity', '10') }}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="current_price">Current Price ($):</label>
+                        <input type="number" id="current_price" name="current_price" placeholder="Enter current price" step="0.01" value="{{ request.form.get('current_price', '120') }}" required>
+                    </div>
+                </div>
+                
+                <!-- Method 2: Percentage and Investment -->
+                <div id="percentage-investment-section" class="input-section" style="display: {% if input_type == 'percentage_investment' %}block{% else %}none{% endif %};">
+                    <h3>Method 2: % Change & Investment</h3>
+                    <div class="input-group">
+                        <label for="investment_amount">Investment Amount ($):</label>
+                        <input type="number" id="investment_amount" name="investment_amount" placeholder="Enter investment amount" step="0.01" value="{{ request.form.get('investment_amount', '1000') }}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="percentage_change">Percentage Change (%):</label>
+                        <input type="number" id="percentage_change" name="percentage_change" placeholder="Enter % change (+ for gain, - for loss)" step="0.01" value="{{ request.form.get('percentage_change', '15') }}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button type="submit" class="submit-button">Calculate Profit/Loss</button>
+            </div>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <h2>Results:</h2>
+            
+            {% if result.method == 'price_quantity' %}
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="label">Buy Price:</span>
+                    <span class="value">${{ "%.2f"|format(result.buy_price) }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Quantity:</span>
+                    <span class="value">{{ result.quantity }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Current Price:</span>
+                    <span class="value">${{ "%.2f"|format(result.current_price) }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total Investment:</span>
+                    <span class="value">${{ "%.2f"|format(result.total_investment) }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Current Value:</span>
+                    <span class="value">${{ "%.2f"|format(result.current_value) }}</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="label">Investment Amount:</span>
+                    <span class="value">${{ "%.2f"|format(result.investment_amount) }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Percentage Change:</span>
+                    <span class="value">{{ "%.2f"|format(result.percentage_change) }}%</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Current Value:</span>
+                    <span class="value">${{ "%.2f"|format(result.current_value) }}</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="profit-loss-section">
+                <h3>Profit/Loss Analysis</h3>
+                <div class="profit-loss-grid">
+                    <div class="profit-loss-item {% if result.profit_loss >= 0 %}profit{% else %}loss{% endif %}">
+                        <span class="label">Net Profit/Loss:</span>
+                        <span class="value">${{ "%.2f"|format(result.profit_loss) }}</span>
+                    </div>
+                    <div class="profit-loss-item {% if result.roi_percentage >= 0 %}profit{% else %}loss{% endif %}">
+                        <span class="label">ROI:</span>
+                        <span class="value">{{ "%.2f"|format(result.roi_percentage) }}%</span>
+                    </div>
+                </div>
+                
+                <div class="visual-indicator">
+                    <div class="progress-bar">
+                        <div class="progress-fill {% if result.profit_loss >= 0 %}profit{% else %}loss{% endif %}" 
+                             style="width: {{ (result.roi_percentage + 100) if result.roi_percentage >= -100 else 0 }}%"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>-100%</span>
+                        <span>0%</span>
+                        <span>+100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
