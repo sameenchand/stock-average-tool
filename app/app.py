@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from calculator import calculate_average, calculate_profit_loss_simple
+from app.calculator import calculate_average, calculate_profit_loss_simple
 
 app = Flask(__name__)
 
