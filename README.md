@@ -2,7 +2,9 @@
 
 A comprehensive Flask web application for calculating weighted average stock prices and tracking profit/loss with an intuitive, modern interface.
 
-## 🚀 Features
+ Live Link: https://stock-average-calculator-5mgs.onrender.com
+
+## Features
 
 ### **Average Price Calculator**
 - **Dynamic Input Management**: Add/remove stock entries on the fly
@@ -28,14 +30,14 @@ A comprehensive Flask web application for calculating weighted average stock pri
 - **Mobile Responsive**: Optimized for all screen sizes
 - **Intuitive Navigation**: Clear navigation between calculators
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Backend**: Python 3.9+ with Flask
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Styling**: Custom CSS with modern design principles
 - **Architecture**: MVC pattern with separation of concerns
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 stock-average-tool/
@@ -54,7 +56,7 @@ stock-average-tool/
 └── README.md                 # This documentation
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.9 or higher
@@ -84,7 +86,7 @@ stock-average-tool/
    http://127.0.0.1:5000
    ```
 
-## 📊 How It Works
+## How It Works
 
 ### **Average Price Calculator**
 1. **Add Stock Entries**: Click "+ Add Stock" to add new price/quantity rows
@@ -110,7 +112,7 @@ stock-average-tool/
 - `Net Profit/Loss = Current Value - Total Investment`
 - `ROI = (Profit/Loss ÷ Total Investment) × 100`
 
-## 💡 Example Calculations
+## Example Calculations
 
 ### **Average Price Example**
 If you buy:
@@ -130,7 +132,7 @@ Using the average price above:
 - **Net Profit: $700.00**
 - **ROI: 31.46%**
 
-## 🎨 Key Features
+## Key Features
 
 ### **Modern Interface**
 - Clean, professional design
@@ -150,7 +152,7 @@ Using the average price above:
 - ROI percentage with visual indicators
 - Detailed summary displays
 
-## 🔧 Technical Details
+## Technical Details
 
 ### **Backend (Flask)**
 - **Routes**: `/` (average calculator), `/profit-loss` (profit/loss calculator)
@@ -170,7 +172,7 @@ Using the average price above:
 - **Color Coding**: Visual indicators for profit/loss
 - **Animations**: Smooth transitions and hover effects
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 Potential features for future development:
 - Dark mode toggle
@@ -181,18 +183,6 @@ Potential features for future development:
 - Mobile app version
 - Multi-currency support
 
-## 📝 License
 
-This project is open source and available under the MIT License.
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
-
-## 📞 Support
-
-For questions or support, please open an issue in the project repository.
-
----
-
-**Happy Trading! 📈**
+**Happy Trading!**
