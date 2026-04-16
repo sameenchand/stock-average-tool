@@ -225,6 +225,18 @@ document.addEventListener("DOMContentLoaded", function () {
             if (el) el.value = prefillQty;
         }
 
+        function updateTargetPrice() {
+            const buyPrice  = parseFloat(document.getElementById('buy_price')?.value);
+            const targetRoi = parseFloat(document.getElementById('target-roi')?.value);
+            const resultEl  = document.getElementById('target-price-result');
+            if (!resultEl) return;
+            if (buyPrice > 0 && !isNaN(targetRoi)) {
+                resultEl.textContent = fmt(buyPrice * (1 + targetRoi / 100));
+            } else {
+                resultEl.textContent = '—';
+            }
+        }
+
         function updatePLDisplay(profitLoss, roi, summaryId) {
             // Show the right summary block
             document.getElementById('pq-summary').style.display  = summaryId === 'pq-summary'  ? '' : 'none';
@@ -245,6 +257,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // Map roi from [-100, +100] → bar width [0%, 100%], capped at both ends
             const barWidth = clamp((roi + 100) / 2, 0, 100);
             fill.style.width = barWidth + '%';
+
+            // Target price card only makes sense for Method 1
+            const targetCard = document.getElementById('target-price-section');
+            if (targetCard) targetCard.style.display = summaryId === 'pq-summary' ? 'block' : 'none';
 
             document.getElementById('result-section').style.display = 'block';
         }
@@ -294,6 +310,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
         }
+
+        // Target ROI input — recalculate target price live
+        const targetRoiInput = document.getElementById('target-roi');
+        if (targetRoiInput) targetRoiInput.addEventListener('input', updateTargetPrice);
+        document.getElementById('buy_price')?.addEventListener('input', updateTargetPrice);
 
         // Switch visible input section when radio changes
         document.querySelectorAll('input[name="input_type"]').forEach(function (radio) {

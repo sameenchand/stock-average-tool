@@ -482,6 +482,50 @@ button:active {
     transform: translateY(-1px);
 }
 
+/* Target Price card */
+.target-price-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-top: 20px;
+}
+
+.target-price-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.target-price-row label,
+.target-price-row span {
+    font-size: 1rem;
+    color: #333;
+}
+
+.target-price-row input {
+    width: 90px;
+    padding: 8px 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.target-price-row input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.target-price-value {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #0056b3;
+    min-width: 80px;
+}
+
 /* Copy button */
 .copy-btn {
     background-color: #17a2b8;
