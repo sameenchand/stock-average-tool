@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Pre-fill the profit/loss page via query param
                 const plLink = document.getElementById('pl-link');
-                plLink.href = '/profit-loss?buy_price=' + avg.toFixed(2);
+                plLink.href = '/profit-loss?buy_price=' + avg.toFixed(2) + '&quantity=' + totalQuantity;
 
                 resultSection.style.display = 'block';
             } else {
@@ -95,12 +95,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (pqSection || pctSection) {
 
-        // Read buy_price from URL query param (set by the average calculator link)
+        // Read query params set by the average calculator link
         const params = new URLSearchParams(window.location.search);
-        const prefill = params.get('buy_price');
-        if (prefill) {
-            const buyPriceInput = document.getElementById('buy_price');
-            if (buyPriceInput) buyPriceInput.value = prefill;
+        const prefillPrice = params.get('buy_price');
+        const prefillQty   = params.get('quantity');
+        if (prefillPrice) {
+            const el = document.getElementById('buy_price');
+            if (el) el.value = prefillPrice;
+        }
+        if (prefillQty) {
+            const el = document.getElementById('quantity');
+            if (el) el.value = prefillQty;
         }
 
         function updatePLDisplay(profitLoss, roi, summaryId) {
@@ -191,8 +196,8 @@ document.addEventListener("DOMContentLoaded", function () {
             input.addEventListener('input', calculatePL);
         });
 
-        // Run once on load in case buy_price was pre-filled via query param
-        if (prefill) calculatePL();
+        // Run once on load in case inputs were pre-filled via query params
+        if (prefillPrice || prefillQty) calculatePL();
     }
 
 });
