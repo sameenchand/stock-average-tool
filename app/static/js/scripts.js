@@ -24,7 +24,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (stockInputs) {
 
+        function saveAvgState() {
+            const rows = stockInputs.querySelectorAll('.stock-row');
+            const data = [];
+            rows.forEach(function (row) {
+                data.push({
+                    price:    row.querySelector('input[name="price"]').value,
+                    quantity: row.querySelector('input[name="quantity"]').value
+                });
+            });
+            localStorage.setItem('avgCalc_rows', JSON.stringify(data));
+        }
+
+        function restoreAvgState() {
+            const saved = localStorage.getItem('avgCalc_rows');
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                if (!Array.isArray(data) || data.length === 0) return;
+                const existing = stockInputs.querySelectorAll('.stock-row');
+                existing.forEach(function (r) { r.remove(); });
+                data.forEach(function (item) {
+                    addStockRow(item.price, item.quantity);
+                });
+            } catch (e) { /* ignore corrupt data */ }
+        }
+
         function calculateAverage() {
+            saveAvgState();
+
             const rows = stockInputs.querySelectorAll('.stock-row');
             let totalCost = 0;
             let totalQuantity = 0;
@@ -59,18 +87,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // Recalculate whenever any input inside stock-inputs changes
         stockInputs.addEventListener('input', calculateAverage);
 
-        // Add a new stock row
-        function addStockRow() {
+        // Add a new stock row (optionally pre-filled)
+        function addStockRow(price, quantity) {
             const row = document.createElement('div');
             row.classList.add('stock-row');
             row.innerHTML = `
-                <input type="number" name="price"    placeholder="Enter Price ($)" step="0.01" min="0">
-                <input type="number" name="quantity" placeholder="Enter Quantity"            min="0">
+                <input type="number" name="price"    placeholder="Enter Price ($)" step="0.01" min="0" value="${price || ''}">
+                <input type="number" name="quantity" placeholder="Enter Quantity"            min="0" value="${quantity || ''}">
                 <button type="button" class="delete-row">Delete</button>
             `;
             stockInputs.appendChild(row);
-            // Bind input events on the new row
-            row.addEventListener('input', calculateAverage);
         }
 
         // Delete a stock row (event delegation)
@@ -85,7 +111,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         const addBtn = document.getElementById('add-stock-button');
-        if (addBtn) addBtn.addEventListener('click', addStockRow);
+        if (addBtn) addBtn.addEventListener('click', function () { addStockRow('', ''); });
+
+        // Restore saved state on load, then calculate
+        restoreAvgState();
+        calculateAverage();
 
         const clearBtn = document.getElementById('clear-all-button');
         if (clearBtn) clearBtn.addEventListener('click', function () {
@@ -108,6 +138,41 @@ document.addEventListener("DOMContentLoaded", function () {
     const pctSection = document.getElementById('percentage-investment-section');
 
     if (pqSection || pctSection) {
+
+        function savePLState() {
+            const method = document.querySelector('input[name="input_type"]:checked')?.value || 'price_quantity';
+            localStorage.setItem('plCalc_method', method);
+            localStorage.setItem('plCalc_pq', JSON.stringify({
+                buy_price:     document.getElementById('buy_price')?.value     || '',
+                quantity:      document.getElementById('quantity')?.value      || '',
+                current_price: document.getElementById('current_price')?.value || ''
+            }));
+            localStorage.setItem('plCalc_pct', JSON.stringify({
+                investment_amount: document.getElementById('investment_amount')?.value || '',
+                percentage_change: document.getElementById('percentage_change')?.value || ''
+            }));
+        }
+
+        function restorePLState() {
+            const method = localStorage.getItem('plCalc_method');
+            if (method) {
+                const radio = document.querySelector(`input[name="input_type"][value="${method}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    pqSection.style.display  = method === 'price_quantity' ? '' : 'none';
+                    pctSection.style.display = method === 'percentage_investment' ? '' : 'none';
+                }
+            }
+            try {
+                const pq = JSON.parse(localStorage.getItem('plCalc_pq') || '{}');
+                if (pq.buy_price)     document.getElementById('buy_price').value     = pq.buy_price;
+                if (pq.quantity)      document.getElementById('quantity').value      = pq.quantity;
+                if (pq.current_price) document.getElementById('current_price').value = pq.current_price;
+                const pct = JSON.parse(localStorage.getItem('plCalc_pct') || '{}');
+                if (pct.investment_amount) document.getElementById('investment_amount').value = pct.investment_amount;
+                if (pct.percentage_change) document.getElementById('percentage_change').value = pct.percentage_change;
+            } catch (e) { /* ignore */ }
+        }
 
         // Read query params set by the average calculator link
         const params = new URLSearchParams(window.location.search);
@@ -147,6 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         function calculatePL() {
+            savePLState();
             const method = document.querySelector('input[name="input_type"]:checked')?.value;
 
             if (method === 'price_quantity' || !method) {
@@ -210,8 +276,9 @@ document.addEventListener("DOMContentLoaded", function () {
             input.addEventListener('input', calculatePL);
         });
 
-        // Run once on load in case inputs were pre-filled via query params
-        if (prefillPrice || prefillQty) calculatePL();
+        // Restore saved state (only when no URL params present), then calculate
+        if (!prefillPrice && !prefillQty) restorePLState();
+        calculatePL();
     }
 
 });
