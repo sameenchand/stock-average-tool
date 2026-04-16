@@ -446,6 +446,29 @@ button:active {
     background-color: #c82333;
 }
 
+/* Link to Profit/Loss from Average results */
+.pl-link-wrap {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pl-link-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.pl-link-btn:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {

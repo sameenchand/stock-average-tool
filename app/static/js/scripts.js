@@ -1,97 +1,198 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Add a new stock input row
-    function addStockInput() {
-        const container = document.getElementById('stock-inputs');
-        const newRow = document.createElement('div');
-        newRow.classList.add('stock-row');
-        newRow.innerHTML = `
-            <input type="number" name="price" placeholder="Purchase Price ($)" step="0.01" required>
-            <input type="number" name="quantity" placeholder="Quantity" required>
-            <button type="button" class="delete-row">Delete</button>
-        `;
-        container.appendChild(newRow);
+
+    // ── Shared helpers ───────────────────────────────────────────────────────
+
+    function fmt(n) {
+        return '$' + n.toFixed(2);
     }
 
-    // Delete a stock input row
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("delete-row")) {
-            event.target.closest('.stock-row').remove();
+    function clamp(val, min, max) {
+        return Math.min(Math.max(val, min), max);
+    }
+
+    // Block negative values on any number input with min="0"
+    document.addEventListener('input', function (e) {
+        const input = e.target;
+        if (input.type === 'number' && input.min === '0' && input.value !== '' && parseFloat(input.value) < 0) {
+            input.value = 0;
         }
     });
 
-    // Handle input type switching (for profit/loss calculator)
-    function handleInputTypeChange() {
-        const priceQuantitySection = document.getElementById('price-quantity-section');
-        const percentageInvestmentSection = document.getElementById('percentage-investment-section');
-        const radioButtons = document.querySelectorAll('input[name="input_type"]');
-        
-        if (radioButtons.length > 0) {
-            radioButtons.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'price_quantity') {
-                        if (priceQuantitySection) priceQuantitySection.style.display = 'block';
-                        if (percentageInvestmentSection) percentageInvestmentSection.style.display = 'none';
-                    } else if (this.value === 'percentage_investment') {
-                        if (priceQuantitySection) priceQuantitySection.style.display = 'none';
-                        if (percentageInvestmentSection) percentageInvestmentSection.style.display = 'block';
-                    }
-                });
+    // ── Average Calculator ───────────────────────────────────────────────────
+
+    const stockInputs = document.getElementById('stock-inputs');
+
+    if (stockInputs) {
+
+        function calculateAverage() {
+            const rows = stockInputs.querySelectorAll('.stock-row');
+            let totalCost = 0;
+            let totalQuantity = 0;
+
+            rows.forEach(function (row) {
+                const price = parseFloat(row.querySelector('input[name="price"]').value);
+                const qty   = parseFloat(row.querySelector('input[name="quantity"]').value);
+                if (price > 0 && qty > 0) {
+                    totalCost     += price * qty;
+                    totalQuantity += qty;
+                }
             });
+
+            const resultSection = document.getElementById('result-section');
+            if (totalQuantity > 0) {
+                const avg = totalCost / totalQuantity;
+
+                document.getElementById('result-avg-price').textContent      = fmt(avg);
+                document.getElementById('result-total-units').textContent     = totalQuantity;
+                document.getElementById('result-total-investment').textContent = fmt(totalCost);
+
+                // Pre-fill the profit/loss page via query param
+                const plLink = document.getElementById('pl-link');
+                plLink.href = '/profit-loss?buy_price=' + avg.toFixed(2);
+
+                resultSection.style.display = 'block';
+            } else {
+                resultSection.style.display = 'none';
+            }
         }
+
+        // Recalculate whenever any input inside stock-inputs changes
+        stockInputs.addEventListener('input', calculateAverage);
+
+        // Add a new stock row
+        function addStockRow() {
+            const row = document.createElement('div');
+            row.classList.add('stock-row');
+            row.innerHTML = `
+                <input type="number" name="price"    placeholder="Enter Price ($)" step="0.01" min="0">
+                <input type="number" name="quantity" placeholder="Enter Quantity"            min="0">
+                <button type="button" class="delete-row">Delete</button>
+            `;
+            stockInputs.appendChild(row);
+            // Bind input events on the new row
+            row.addEventListener('input', calculateAverage);
+        }
+
+        // Delete a stock row (event delegation)
+        stockInputs.addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-row')) {
+                const allRows = stockInputs.querySelectorAll('.stock-row');
+                if (allRows.length > 1) {
+                    e.target.closest('.stock-row').remove();
+                    calculateAverage();
+                }
+            }
+        });
+
+        const addBtn = document.getElementById('add-stock-button');
+        if (addBtn) addBtn.addEventListener('click', addStockRow);
     }
 
-    // Real-time calculation preview (optional enhancement)
-    function addRealTimeCalculation() {
-        const form = document.querySelector('form');
-        const inputs = form.querySelectorAll('input[type="number"]');
-        
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                // This could be enhanced to show real-time calculations
-                // For now, we'll just validate inputs
-                if (this.value < 0) {
-                    this.style.borderColor = '#dc3545';
+    // ── Profit/Loss Calculator ───────────────────────────────────────────────
+
+    const pqSection  = document.getElementById('price-quantity-section');
+    const pctSection = document.getElementById('percentage-investment-section');
+
+    if (pqSection || pctSection) {
+
+        // Read buy_price from URL query param (set by the average calculator link)
+        const params = new URLSearchParams(window.location.search);
+        const prefill = params.get('buy_price');
+        if (prefill) {
+            const buyPriceInput = document.getElementById('buy_price');
+            if (buyPriceInput) buyPriceInput.value = prefill;
+        }
+
+        function updatePLDisplay(profitLoss, roi, summaryId) {
+            // Show the right summary block
+            document.getElementById('pq-summary').style.display  = summaryId === 'pq-summary'  ? '' : 'none';
+            document.getElementById('pct-summary').style.display = summaryId === 'pct-summary' ? '' : 'none';
+
+            const plItem  = document.getElementById('res-pl-item');
+            const roiItem = document.getElementById('res-roi-item');
+            const fill    = document.getElementById('res-progress-fill');
+
+            document.getElementById('res-net-pl').textContent = fmt(profitLoss);
+            document.getElementById('res-roi').textContent    = roi.toFixed(2) + '%';
+
+            const isProfit = profitLoss >= 0;
+            plItem.className  = 'profit-loss-item ' + (isProfit ? 'profit' : 'loss');
+            roiItem.className = 'profit-loss-item ' + (isProfit ? 'profit' : 'loss');
+            fill.className    = 'progress-fill '    + (isProfit ? 'profit' : 'loss');
+
+            // Map roi from [-100, +100] → bar width [0%, 100%], capped at both ends
+            const barWidth = clamp((roi + 100) / 2, 0, 100);
+            fill.style.width = barWidth + '%';
+
+            document.getElementById('result-section').style.display = 'block';
+        }
+
+        function calculatePL() {
+            const method = document.querySelector('input[name="input_type"]:checked')?.value;
+
+            if (method === 'price_quantity' || !method) {
+                const buyPrice     = parseFloat(document.getElementById('buy_price')?.value);
+                const qty          = parseFloat(document.getElementById('quantity')?.value);
+                const currentPrice = parseFloat(document.getElementById('current_price')?.value);
+
+                if (buyPrice > 0 && qty > 0 && currentPrice > 0) {
+                    const totalInv   = buyPrice * qty;
+                    const curVal     = currentPrice * qty;
+                    const pl         = curVal - totalInv;
+                    const roi        = (pl / totalInv) * 100;
+
+                    document.getElementById('res-buy-price').textContent        = fmt(buyPrice);
+                    document.getElementById('res-quantity').textContent         = qty;
+                    document.getElementById('res-current-price').textContent    = fmt(currentPrice);
+                    document.getElementById('res-total-investment').textContent = fmt(totalInv);
+                    document.getElementById('res-current-value').textContent    = fmt(curVal);
+
+                    updatePLDisplay(pl, roi, 'pq-summary');
                 } else {
-                    this.style.borderColor = '#ddd';
+                    document.getElementById('result-section').style.display = 'none';
                 }
+
+            } else if (method === 'percentage_investment') {
+                const invAmount = parseFloat(document.getElementById('investment_amount')?.value);
+                const pctChange = parseFloat(document.getElementById('percentage_change')?.value);
+
+                if (invAmount > 0 && !isNaN(pctChange)) {
+                    const pl     = invAmount * (pctChange / 100);
+                    const curVal = invAmount + pl;
+                    const roi    = pctChange;
+
+                    document.getElementById('res-investment-amount').textContent  = fmt(invAmount);
+                    document.getElementById('res-pct-change').textContent         = pctChange.toFixed(2) + '%';
+                    document.getElementById('res-pct-current-value').textContent  = fmt(curVal);
+
+                    updatePLDisplay(pl, roi, 'pct-summary');
+                } else {
+                    document.getElementById('result-section').style.display = 'none';
+                }
+            }
+        }
+
+        // Switch visible input section when radio changes
+        document.querySelectorAll('input[name="input_type"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                if (this.value === 'price_quantity') {
+                    pqSection.style.display  = '';
+                    pctSection.style.display = 'none';
+                } else {
+                    pqSection.style.display  = 'none';
+                    pctSection.style.display = '';
+                }
+                calculatePL();
             });
         });
+
+        // Recalculate on any input change in the profit/loss section
+        document.querySelectorAll('#price-quantity-section input, #percentage-investment-section input').forEach(function (input) {
+            input.addEventListener('input', calculatePL);
+        });
+
+        // Run once on load in case buy_price was pre-filled via query param
+        if (prefill) calculatePL();
     }
 
-    // Form submission debugging
-    function addFormDebugging() {
-        const form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                console.log('Form submitted');
-                console.log('Form data:', new FormData(form));
-                
-                // Check if we're on the profit-loss page
-                if (window.location.pathname === '/profit-loss') {
-                    const inputType = document.querySelector('input[name="input_type"]:checked');
-                    console.log('Selected input type:', inputType ? inputType.value : 'none');
-                    
-                    if (inputType && inputType.value === 'price_quantity') {
-                        const buyPrice = document.getElementById('buy_price').value;
-                        const quantity = document.getElementById('quantity').value;
-                        const currentPrice = document.getElementById('current_price').value;
-                        console.log('Price/Quantity values:', { buyPrice, quantity, currentPrice });
-                    } else if (inputType && inputType.value === 'percentage_investment') {
-                        const investmentAmount = document.getElementById('investment_amount').value;
-                        const percentageChange = document.getElementById('percentage_change').value;
-                        console.log('Percentage values:', { investmentAmount, percentageChange });
-                    }
-                }
-            });
-        }
-    }
-
-    // Initialize all functionality
-    const addButton = document.getElementById('add-stock-button');
-    if (addButton) {
-        addButton.addEventListener('click', addStockInput);
-    }
-    handleInputTypeChange();
-    addRealTimeCalculation();
-    addFormDebugging();
 });

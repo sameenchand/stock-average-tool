@@ -13,46 +13,37 @@
             <a href="/" class="nav-button active">Average Calculator</a>
             <a href="/profit-loss" class="nav-button">Profit/Loss Calculator</a>
         </div>
-        
-        <form method="POST" class="form">
-            <div class="input-type-indicator">
-                <button type="button" class="input-type-button active">Price & Quantity</button>
-            </div>
-            <div id="stock-inputs" class="inputs-container">
-                <div class="column-headers">
-                    <div class="header-cell">Price ($)</div>
-                    <div class="header-cell">Quantity</div>
-                    <div class="header-cell-spacer"></div>
-                </div>
-                {% for stock in stocks %}
-                <div class="stock-row">
-                    <input type="number" name="price" placeholder="Enter Price ($)" value="{{ stock.price }}" step="0.01" required>
-                    <input type="number" name="quantity" placeholder="Enter Quantity" value="{{ stock.quantity }}" required>
-                    <button type="button" class="delete-row">Delete</button>
-                </div>
-                {% endfor %}
-                {% if not stocks %}
-                <div class="stock-row">
-                    <input type="number" name="price" placeholder="Enter Price ($)" step="0.01" required>
-                    <input type="number" name="quantity" placeholder="Enter Quantity" required>
-                    <button type="button" class="delete-row">Delete</button>
-                </div>
-                {% endif %}
-            </div>
-            <div class="buttons">
-                <button type="button" class="add-button" id="add-stock-button">+ Add Stock</button>
-                <button type="submit" class="submit-button">Calculate</button>
-            </div>
-        </form>
 
-        {% if average_price is not none %}
-        <div class="result">
-            <h2>Results:</h2>
-            <p><strong>Average Price per Stock:</strong> ${{ "%.2f"|format(average_price) }}</p>
-            <p><strong>Total Units:</strong> {{ total_units }}</p>
-            <p><strong>Total Investment:</strong> ${{ "%.2f"|format(total_investment) }}</p>
+        <div class="input-type-indicator">
+            <button type="button" class="input-type-button active">Price &amp; Quantity</button>
         </div>
-        {% endif %}
+
+        <div id="stock-inputs" class="inputs-container">
+            <div class="column-headers">
+                <div class="header-cell">Price ($)</div>
+                <div class="header-cell">Quantity</div>
+                <div class="header-cell-spacer"></div>
+            </div>
+            <div class="stock-row">
+                <input type="number" name="price" placeholder="Enter Price ($)" step="0.01" min="0">
+                <input type="number" name="quantity" placeholder="Enter Quantity" min="0">
+                <button type="button" class="delete-row">Delete</button>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button type="button" class="add-button" id="add-stock-button">+ Add Stock</button>
+        </div>
+
+        <div class="result" id="result-section" style="display:none">
+            <h2>Results:</h2>
+            <p><strong>Average Price per Stock:</strong> <span id="result-avg-price">-</span></p>
+            <p><strong>Total Units:</strong> <span id="result-total-units">-</span></p>
+            <p><strong>Total Investment:</strong> <span id="result-total-investment">-</span></p>
+            <div class="pl-link-wrap">
+                <a href="/profit-loss" id="pl-link" class="pl-link-btn">Use in Profit/Loss Calculator &rarr;</a>
+            </div>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
