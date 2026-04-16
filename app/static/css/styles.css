@@ -455,10 +455,14 @@ button:active {
     background-color: #c82333;
 }
 
-/* Link to Profit/Loss from Average results */
-.pl-link-wrap {
+/* Result action row (link + copy button) */
+.result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
     margin-top: 20px;
-    text-align: center;
+    flex-wrap: wrap;
 }
 
 .pl-link-btn {
@@ -476,6 +480,21 @@ button:active {
 .pl-link-btn:hover {
     background-color: #218838;
     transform: translateY(-1px);
+}
+
+/* Copy button */
+.copy-btn {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.copy-btn:hover {
+    background-color: #138496;
+}
+
+.copy-btn:disabled {
+    background-color: #28a745;
+    cursor: default;
 }
 
 /* Responsive Design */

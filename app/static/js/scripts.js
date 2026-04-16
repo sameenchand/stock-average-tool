@@ -6,6 +6,30 @@ document.addEventListener("DOMContentLoaded", function () {
         return '$' + n.toFixed(2);
     }
 
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text);
+        } else {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+    }
+
+    function showCopyFeedback(btn) {
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.disabled = true;
+        setTimeout(function () {
+            btn.textContent = original;
+            btn.disabled = false;
+        }, 2000);
+    }
+
     function clamp(val, min, max) {
         return Math.min(Math.max(val, min), max);
     }
@@ -112,6 +136,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const addBtn = document.getElementById('add-stock-button');
         if (addBtn) addBtn.addEventListener('click', function () { addStockRow('', ''); });
+
+        const avgCopyBtn = document.getElementById('avg-copy-btn');
+        if (avgCopyBtn) avgCopyBtn.addEventListener('click', function () {
+            const avg  = document.getElementById('result-avg-price').textContent;
+            const units = document.getElementById('result-total-units').textContent;
+            const inv  = document.getElementById('result-total-investment').textContent;
+            copyToClipboard(
+                'Stock Average Calculator Results\n' +
+                'Average Price: ' + avg + '\n' +
+                'Total Units: '   + units + '\n' +
+                'Total Investment: ' + inv
+            );
+            showCopyFeedback(avgCopyBtn);
+        });
 
         // Restore saved state on load, then calculate
         restoreAvgState();
@@ -274,6 +312,27 @@ document.addEventListener("DOMContentLoaded", function () {
         // Recalculate on any input change in the profit/loss section
         document.querySelectorAll('#price-quantity-section input, #percentage-investment-section input').forEach(function (input) {
             input.addEventListener('input', calculatePL);
+        });
+
+        const plCopyBtn = document.getElementById('pl-copy-btn');
+        if (plCopyBtn) plCopyBtn.addEventListener('click', function () {
+            const method = document.querySelector('input[name="input_type"]:checked')?.value;
+            let text = 'Profit/Loss Calculator Results\n';
+            if (method === 'price_quantity' || !method) {
+                text += 'Buy Price: '         + document.getElementById('res-buy-price').textContent        + '\n';
+                text += 'Quantity: '          + document.getElementById('res-quantity').textContent         + '\n';
+                text += 'Current Price: '     + document.getElementById('res-current-price').textContent    + '\n';
+                text += 'Total Investment: '  + document.getElementById('res-total-investment').textContent + '\n';
+                text += 'Current Value: '     + document.getElementById('res-current-value').textContent    + '\n';
+            } else {
+                text += 'Investment: '        + document.getElementById('res-investment-amount').textContent  + '\n';
+                text += 'Change: '            + document.getElementById('res-pct-change').textContent         + '\n';
+                text += 'Current Value: '     + document.getElementById('res-pct-current-value').textContent + '\n';
+            }
+            text += 'Net P/L: ' + document.getElementById('res-net-pl').textContent + '\n';
+            text += 'ROI: '     + document.getElementById('res-roi').textContent;
+            copyToClipboard(text);
+            showCopyFeedback(plCopyBtn);
         });
 
         // Restore saved state (only when no URL params present), then calculate
