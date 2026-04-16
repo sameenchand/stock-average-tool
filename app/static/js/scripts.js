@@ -86,6 +86,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const addBtn = document.getElementById('add-stock-button');
         if (addBtn) addBtn.addEventListener('click', addStockRow);
+
+        const clearBtn = document.getElementById('clear-all-button');
+        if (clearBtn) clearBtn.addEventListener('click', function () {
+            const rows = stockInputs.querySelectorAll('.stock-row');
+            rows.forEach(function (row, i) {
+                if (i === 0) {
+                    row.querySelector('input[name="price"]').value = '';
+                    row.querySelector('input[name="quantity"]').value = '';
+                } else {
+                    row.remove();
+                }
+            });
+            calculateAverage();
+        });
     }
 
     // ── Profit/Loss Calculator ───────────────────────────────────────────────

@@ -157,6 +157,15 @@ button:active {
     background-color: #218838;
 }
 
+.clear-btn {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.clear-btn:hover {
+    background-color: #545b62;
+}
+
 .submit-button {
     background-color: #007bff;
     color: #fff;
