@@ -541,6 +541,30 @@ button:active {
     cursor: default;
 }
 
+/* DCA page */
+.subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 25px;
+}
+
+.dca-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.dca-note {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 12px;
+    font-style: italic;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {

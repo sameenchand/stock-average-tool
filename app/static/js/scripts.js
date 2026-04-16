@@ -361,4 +361,106 @@ document.addEventListener("DOMContentLoaded", function () {
         calculatePL();
     }
 
+    // ── DCA Calculator ───────────────────────────────────────────────────────
+
+    const dcaInputs = document.getElementById('dca-inputs');
+
+    if (dcaInputs) {
+
+        function calculateDCA() {
+            const currentQty = parseFloat(document.getElementById('dca-current-qty').value);
+            const currentAvg = parseFloat(document.getElementById('dca-current-avg').value);
+            const newPrice   = parseFloat(document.getElementById('dca-new-price').value);
+            const targetAvg  = parseFloat(document.getElementById('dca-target-avg').value);
+
+            const resultSection  = document.getElementById('dca-result');
+            const errorDiv       = document.getElementById('dca-error');
+            const successDiv     = document.getElementById('dca-success');
+            const fractionalNote = document.getElementById('dca-fractional-note');
+
+            if (!(currentQty > 0 && currentAvg > 0 && newPrice > 0 && targetAvg > 0)) {
+                resultSection.style.display = 'none';
+                return;
+            }
+
+            resultSection.style.display = 'block';
+
+            // Already at target
+            if (Math.abs(currentAvg - targetAvg) < 0.001) {
+                errorDiv.textContent = 'Your current average already matches the target — no additional shares needed.';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+
+            // New price equals target — would need infinite shares
+            if (Math.abs(newPrice - targetAvg) < 0.001) {
+                errorDiv.textContent = 'The new buy price cannot equal the target average — you would need infinite shares.';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+
+            // n = currentQty * (targetAvg - currentAvg) / (newPrice - targetAvg)
+            const exact = currentQty * (targetAvg - currentAvg) / (newPrice - targetAvg);
+
+            if (exact <= 0) {
+                let msg = 'Cannot reach that target average by buying at that price. ';
+                if (targetAvg < currentAvg) {
+                    msg += 'To lower your average, the new buy price must be below your target average.';
+                } else {
+                    msg += 'To raise your average, the new buy price must be above your target average.';
+                }
+                errorDiv.textContent = msg;
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'block';
+
+            const whole              = Math.ceil(exact);
+            const additionalCost     = whole * newPrice;
+            const newTotalShares     = currentQty + whole;
+            const newTotalInvestment = currentQty * currentAvg + additionalCost;
+            const achievedAvg        = newTotalInvestment / newTotalShares;
+
+            document.getElementById('dca-shares-needed').textContent       = whole.toLocaleString();
+            document.getElementById('dca-additional-cost').textContent      = fmt(additionalCost);
+            document.getElementById('dca-new-total-shares').textContent     = newTotalShares.toLocaleString();
+            document.getElementById('dca-new-total-investment').textContent = fmt(newTotalInvestment);
+            document.getElementById('dca-achieved-avg').textContent         = fmt(achievedAvg);
+
+            // Show note if ceiling changed the share count
+            const hasFraction = (exact % 1) > 0.001;
+            if (hasFraction) {
+                fractionalNote.textContent = 'Exact shares needed: ' + exact.toFixed(4) + '. Rounded up to ' + whole + ' whole shares — your achieved average will be slightly better than your target.';
+                fractionalNote.style.display = 'block';
+            } else {
+                fractionalNote.style.display = 'none';
+            }
+        }
+
+        dcaInputs.addEventListener('input', calculateDCA);
+
+        const dcaCopyBtn = document.getElementById('dca-copy-btn');
+        if (dcaCopyBtn) dcaCopyBtn.addEventListener('click', function () {
+            const shares = document.getElementById('dca-shares-needed').textContent;
+            const cost   = document.getElementById('dca-additional-cost').textContent;
+            const total  = document.getElementById('dca-new-total-shares').textContent;
+            const inv    = document.getElementById('dca-new-total-investment').textContent;
+            const avg    = document.getElementById('dca-achieved-avg').textContent;
+            copyToClipboard(
+                'DCA Calculator Results\n' +
+                'Shares to Buy: '        + shares + '\n' +
+                'Additional Cost: '      + cost   + '\n' +
+                'New Total Shares: '     + total  + '\n' +
+                'New Total Investment: ' + inv    + '\n' +
+                'Achieved Average: '     + avg
+            );
+            showCopyFeedback(dcaCopyBtn);
+        });
+    }
+
 });

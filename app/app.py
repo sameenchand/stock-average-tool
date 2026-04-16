@@ -10,6 +10,10 @@ def index():
 def profit_loss():
     return render_template('profit_loss.html')
 
+@app.route('/dca')
+def dca():
+    return render_template('dca.html')
+
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
