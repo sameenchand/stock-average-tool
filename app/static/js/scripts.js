@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Shared helpers ───────────────────────────────────────────────────────
 
     function fmt(n) {
-        return '$' + n.toFixed(2);
+        return n.toFixed(2);
     }
 
     function copyToClipboard(text) {
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const row = document.createElement('div');
             row.classList.add('stock-row');
             row.innerHTML = `
-                <input type="number" name="price"    placeholder="Enter Price ($)" step="0.01" min="0" value="${price || ''}">
+                <input type="number" name="price"    placeholder="Enter Price" step="0.01" min="0" value="${price || ''}">
                 <input type="number" name="quantity" placeholder="Enter Quantity"            min="0" value="${quantity || ''}">
                 <button type="button" class="delete-row">Delete</button>
             `;
