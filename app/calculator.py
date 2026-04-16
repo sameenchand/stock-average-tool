@@ -10,29 +10,6 @@ def calculate_average(stocks):
 
     return total_cost / total_quantity if total_quantity > 0 else 0
 
-def calculate_profit_loss(average_price, current_price, total_quantity):
-    """
-    Calculate profit/loss based on average price and current price
-    """
-    total_investment = average_price * total_quantity
-    current_value = current_price * total_quantity
-    profit_loss = current_value - total_investment
-    roi_percentage = (profit_loss / total_investment) * 100 if total_investment > 0 else 0
-    
-    return {
-        'total_investment': total_investment,
-        'current_value': current_value,
-        'profit_loss': profit_loss,
-        'roi_percentage': roi_percentage
-    }
-
-def calculate_from_growth_percentage(average_price, growth_percentage, total_quantity):
-    """
-    Calculate current price and profit/loss from growth percentage
-    """
-    current_price = average_price * (1 + growth_percentage / 100)
-    return calculate_profit_loss(average_price, current_price, total_quantity), current_price
-
 def calculate_profit_loss_simple(buy_price=None, quantity=None, current_price=None, 
                                 investment_amount=None, percentage_change=None):
     """
