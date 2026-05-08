@@ -1,5 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    // ── Dark mode ────────────────────────────────────────────────────────────
+
+    const toggleBtn = document.getElementById('theme-toggle');
+
+    function applyTheme(dark) {
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        if (toggleBtn) toggleBtn.textContent = dark ? 'Light' : 'Dark';
+    }
+
+    applyTheme(localStorage.getItem('theme') === 'dark');
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function () {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            applyTheme(!isDark);
+        });
+    }
+
     // ── Shared helpers ───────────────────────────────────────────────────────
 
     function fmt(n) {
