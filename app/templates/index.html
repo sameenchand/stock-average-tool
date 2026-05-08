@@ -10,40 +10,51 @@
     <div class="container">
         <h1>Stock Average Price Calculator</h1>
         <div class="nav-buttons">
-            <a href="/" class="nav-button active">Average Calculator</a>
-            <a href="/profit-loss" class="nav-button">Profit/Loss Calculator</a>
-            <a href="/dca" class="nav-button">DCA Calculator</a>
+            <a href="/" class="nav-button active">Average</a>
+            <a href="/profit-loss" class="nav-button">Profit / Loss</a>
+            <a href="/dca" class="nav-button">DCA</a>
         </div>
 
-        <div class="input-type-indicator">
-            <button type="button" class="input-type-button active">Price &amp; Quantity</button>
-        </div>
+        <p class="calc-hint">Enter any two values per row — the third fills in automatically</p>
 
         <div id="stock-inputs" class="inputs-container">
             <div class="column-headers">
                 <div class="header-cell">Price</div>
                 <div class="header-cell">Quantity</div>
+                <div class="header-cell">Amount</div>
                 <div class="header-cell-spacer"></div>
             </div>
             <div class="stock-row">
-                <input type="number" name="price" placeholder="Enter Price" step="0.01" min="0">
-                <input type="number" name="quantity" placeholder="Enter Quantity" min="0">
-                <button type="button" class="delete-row">Delete</button>
+                <input type="number" name="price"    placeholder="e.g. 52.30" step="0.01" min="0">
+                <input type="number" name="quantity" placeholder="e.g. 100"             min="0">
+                <input type="number" name="amount"   placeholder="e.g. 5000"  step="0.01" min="0">
+                <button type="button" class="delete-row" title="Remove row">&times;</button>
             </div>
         </div>
 
         <div class="buttons">
-            <button type="button" class="add-button" id="add-stock-button">+ Add Stock</button>
-            <button type="button" class="clear-btn" id="clear-all-button">Clear All</button>
+            <button type="button" class="add-button" id="add-stock-button">+ Add Row</button>
+            <button type="button" class="clear-btn"  id="clear-all-button">Clear All</button>
         </div>
 
         <div class="result" id="result-section" style="display:none">
-            <h2>Results:</h2>
-            <p><strong>Average Price per Stock:</strong> <span id="result-avg-price">-</span></p>
-            <p><strong>Total Units:</strong> <span id="result-total-units">-</span></p>
-            <p><strong>Total Investment:</strong> <span id="result-total-investment">-</span></p>
+            <h2>Results</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="label">Average Price</span>
+                    <span class="value" id="result-avg-price">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total Units</span>
+                    <span class="value" id="result-total-units">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total Investment</span>
+                    <span class="value" id="result-total-investment">-</span>
+                </div>
+            </div>
             <div class="result-actions">
-                <a href="/profit-loss" id="pl-link" class="pl-link-btn">Use in Profit/Loss Calculator &rarr;</a>
+                <a href="/profit-loss" id="pl-link" class="pl-link-btn">Use in Profit/Loss &rarr;</a>
                 <button type="button" class="copy-btn" id="avg-copy-btn">Copy Results</button>
             </div>
         </div>

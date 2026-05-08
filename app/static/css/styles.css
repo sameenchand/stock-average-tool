@@ -1,4 +1,17 @@
-/* General Page Styling */
+/* ── Animations ─────────────────────────────────────────────────────────── */
+
+@keyframes autofill-flash {
+    0%   { background-color: #fff8e1; border-color: #ffc107; }
+    100% { background-color: white;   border-color: #ddd; }
+}
+
+@keyframes result-appear {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -7,7 +20,6 @@ body {
     color: #333;
 }
 
-/* Center the Container */
 .container {
     max-width: 700px;
     margin: 50px auto;
@@ -18,20 +30,23 @@ body {
     text-align: center;
 }
 
-/* Navigation */
+/* ── Navigation ─────────────────────────────────────────────────────────── */
+
 .nav-buttons {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .nav-button {
-    padding: 10px 20px;
+    padding: 9px 18px;
     text-decoration: none;
     border-radius: 8px;
     font-weight: bold;
-    transition: all 0.3s;
+    font-size: 0.9rem;
+    transition: all 0.2s;
     border: 2px solid #007bff;
     color: #007bff;
     background-color: white;
@@ -51,36 +66,46 @@ body {
     background-color: #0056b3;
 }
 
-/* Headings */
+/* ── Headings ───────────────────────────────────────────────────────────── */
+
 h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
     color: #0056b3;
     margin-bottom: 20px;
 }
 
 h2 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     color: #007bff;
+    margin-top: 0;
+    margin-bottom: 20px;
 }
 
 h3 {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     color: #0056b3;
     margin-bottom: 15px;
 }
 
-p {
-    font-size: 1.4rem;
-    margin-top: 10px;
+/* ── Auto-fill hint ─────────────────────────────────────────────────────── */
+
+.calc-hint {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 0 0 18px;
+    padding: 8px 16px;
+    background: #f0f7ff;
+    border: 1px dashed #b8d4f5;
+    border-radius: 6px;
 }
 
-/* Form Styling */
-.form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+/* ── Auto-fill flash ────────────────────────────────────────────────────── */
+
+.autofilled {
+    animation: autofill-flash 0.7s ease-out;
 }
+
+/* ── Average calculator grid ────────────────────────────────────────────── */
 
 .inputs-container {
     width: 100%;
@@ -88,60 +113,95 @@ p {
 
 .column-headers {
     display: flex;
-    justify-content: space-between;
     gap: 10px;
-    margin-bottom: 15px;
-    padding: 0 5px;
+    margin-bottom: 10px;
+    align-items: center;
 }
 
 .header-cell {
     flex: 1;
-    padding: 12px 15px;
-    font-size: 1rem;
+    padding: 8px 10px;
+    font-size: 0.8rem;
     font-weight: bold;
     color: #0056b3;
     text-align: center;
     background-color: #e3f2fd;
-    border: 2px solid #007bff;
-    border-radius: 8px;
+    border: 1px solid #b8d4f5;
+    border-radius: 6px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .header-cell-spacer {
-    flex: 0 0 60px;
-    /* This matches the width of the delete button */
+    flex: 0 0 36px;
 }
 
 .stock-row {
     display: flex;
-    justify-content: space-between;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    align-items: center;
 }
 
 .stock-row input {
     flex: 1;
-    padding: 12px 15px;
-    font-size: 1rem;
+    padding: 10px 12px;
+    font-size: 0.95rem;
     border: 1px solid #ddd;
     border-radius: 8px;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s, background-color 0.2s;
+    min-width: 0;
 }
 
 .stock-row input:focus {
     border-color: #007bff;
     outline: none;
+    background-color: #fafcff;
+}
+
+/* ── Delete row button (×) ──────────────────────────────────────────────── */
+
+.delete-row {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    font-size: 1.1rem;
+    line-height: 1;
+    border-radius: 50%;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-row:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+/* ── Buttons row ────────────────────────────────────────────────────────── */
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 14px;
+    margin-bottom: 4px;
 }
 
 button {
-    padding: 12px 20px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    font-size: 0.95rem;
     font-weight: bold;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: background-color 0.2s, transform 0.15s;
 }
 
 button:active {
@@ -166,296 +226,55 @@ button:active {
     background-color: #545b62;
 }
 
-.submit-button {
-    background-color: #007bff;
-    color: #fff;
-}
+/* ── Result box ─────────────────────────────────────────────────────────── */
 
-.submit-button:hover {
-    background-color: #0056b3;
-}
-
-/* Subtitle */
-.subtitle {
-    color: #666;
-    font-size: 1.1rem;
-    margin-bottom: 30px;
-}
-
-/* Sections */
-.section {
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-}
-
-.section h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    color: #0056b3;
-}
-
-/* Input Type Indicator */
-.input-type-indicator {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.input-type-button {
-    background-color: #28a745;
-    color: white;
-    padding: 12px 24px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border: 2px solid #28a745;
-    border-radius: 8px;
-    cursor: default;
-    transition: all 0.3s;
-    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
-}
-
-.input-type-button:hover {
-    background-color: #218838;
-    border-color: #218838;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
-}
-
-/* Input Type Selector */
-.input-type-selector {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    justify-content: center;
-}
-
-.radio-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 10px 20px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    transition: all 0.3s;
-    background-color: white;
-}
-
-.radio-option:hover {
-    border-color: #007bff;
-    background-color: #f8f9fa;
-}
-
-.radio-option input[type="radio"] {
-    margin: 0;
-    position: relative;
-    z-index: 1;
-    opacity: 1;
-}
-
-.radio-option input[type="radio"]:checked + span {
-    font-weight: bold;
-    color: #007bff;
-}
-
-.radio-option:has(input[type="radio"]:checked) {
-    border-color: #007bff;
-    background-color: #e3f2fd;
-}
-
-/* Input Sections */
-.input-sections {
-    margin-bottom: 20px;
-}
-
-.input-section {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 20px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #333;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 12px 15px;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    transition: border-color 0.3s;
-    box-sizing: border-box;
-}
-
-.input-group input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-/* Current Value Inputs */
-.current-value-inputs {
-    display: flex;
-    justify-content: center;
-}
-
-/* Result Box */
 .result {
-    margin-top: 20px;
-    padding: 25px;
+    margin-top: 24px;
+    padding: 24px;
     background-color: #f8f9fa;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+    animation: result-appear 0.25s ease;
 }
 
-.result h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #0056b3;
-}
+/* ── Summary grid (used on all pages) ──────────────────────────────────── */
 
-.result h3 {
-    margin-top: 25px;
-    margin-bottom: 15px;
-    color: #007bff;
-    text-align: center;
-}
-
-/* Summary Grid */
 .summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .summary-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 14px 16px;
     background-color: white;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .summary-item .label {
-    font-weight: 500;
-    color: #666;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
 }
 
 .summary-item .value {
     font-weight: bold;
-    color: #333;
-    font-size: 1.1rem;
+    color: #1a1a1a;
+    font-size: 1.15rem;
 }
 
-/* Profit/Loss Section */
-.profit-loss-section {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    margin-top: 20px;
-}
+/* ── Result actions (link + copy) ───────────────────────────────────────── */
 
-.profit-loss-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.profit-loss-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-.profit-loss-item.profit {
-    background-color: #d4edda;
-    border: 2px solid #28a745;
-    color: #155724;
-}
-
-.profit-loss-item.loss {
-    background-color: #f8d7da;
-    border: 2px solid #dc3545;
-    color: #721c24;
-}
-
-/* Visual Indicator */
-.visual-indicator {
-    margin-top: 20px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 20px;
-    background-color: #e9ecef;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    position: relative;
-}
-
-.progress-fill {
-    height: 100%;
-    transition: width 0.5s ease;
-    position: relative;
-}
-
-.progress-fill.profit {
-    background: linear-gradient(90deg, #28a745, #20c997);
-}
-
-.progress-fill.loss {
-    background: linear-gradient(90deg, #dc3545, #fd7e14);
-}
-
-.progress-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
-}
-
-/* Delete Button Styling */
-.delete-row {
-    background-color: #dc3545;
-    color: #fff;
-    padding: 8px 12px;
-    font-size: 0.9rem;
-    min-width: 60px;
-}
-
-.delete-row:hover {
-    background-color: #c82333;
-}
-
-/* Result action row (link + copy button) */
 .result-actions {
     display: flex;
     gap: 12px;
@@ -467,14 +286,14 @@ button:active {
 
 .pl-link-btn {
     display: inline-block;
-    padding: 12px 24px;
+    padding: 10px 20px;
     background-color: #28a745;
     color: white;
     text-decoration: none;
     border-radius: 8px;
     font-weight: bold;
-    font-size: 1rem;
-    transition: background-color 0.3s, transform 0.2s;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, transform 0.15s;
 }
 
 .pl-link-btn:hover {
@@ -482,51 +301,6 @@ button:active {
     transform: translateY(-1px);
 }
 
-/* Target Price card */
-.target-price-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    margin-top: 20px;
-}
-
-.target-price-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.target-price-row label,
-.target-price-row span {
-    font-size: 1rem;
-    color: #333;
-}
-
-.target-price-row input {
-    width: 90px;
-    padding: 8px 10px;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.target-price-row input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.target-price-value {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #0056b3;
-    min-width: 80px;
-}
-
-/* Copy button */
 .copy-btn {
     background-color: #17a2b8;
     color: #fff;
@@ -541,11 +315,229 @@ button:active {
     cursor: default;
 }
 
-/* DCA page */
-.subtitle {
-    color: #666;
+/* ── Radio method selector (Profit/Loss) ────────────────────────────────── */
+
+.input-type-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 9px 18px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background-color: white;
+    font-size: 0.9rem;
+}
+
+.radio-option:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.radio-option input[type="radio"]:checked + span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.radio-option:has(input[type="radio"]:checked) {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+
+/* ── Input sections (Profit/Loss & DCA) ─────────────────────────────────── */
+
+.input-sections {
+    margin-bottom: 20px;
+}
+
+.input-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group {
+    margin-bottom: 14px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 11px 14px;
     font-size: 1rem;
-    margin-bottom: 25px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    border-color: #007bff;
+    outline: none;
+    background-color: #fafcff;
+}
+
+/* ── Profit/Loss analysis ────────────────────────────────────────────────── */
+
+.profit-loss-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-top: 16px;
+}
+
+.profit-loss-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.profit-loss-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: 8px;
+}
+
+.profit-loss-item .label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.profit-loss-item .value {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.profit-loss-item.profit {
+    background-color: #d4edda;
+    border: 2px solid #28a745;
+    color: #155724;
+}
+
+.profit-loss-item.loss {
+    background-color: #f8d7da;
+    border: 2px solid #dc3545;
+    color: #721c24;
+}
+
+.visual-indicator {
+    margin-top: 16px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 16px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.progress-fill.profit {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+.progress-fill.loss {
+    background: linear-gradient(90deg, #dc3545, #fd7e14);
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* ── Target price card ──────────────────────────────────────────────────── */
+
+.target-price-card {
+    background-color: white;
+    padding: 18px 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-top: 16px;
+}
+
+.target-price-card h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.target-price-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.target-price-row label,
+.target-price-row span {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.target-price-row input {
+    width: 80px;
+    padding: 7px 10px;
+    font-size: 0.95rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.target-price-row input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.target-price-value {
+    font-weight: bold;
+    font-size: 1.15rem;
+    color: #0056b3;
+    min-width: 70px;
+}
+
+/* ── DCA page ────────────────────────────────────────────────────────────── */
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin: -10px 0 22px;
 }
 
 .dca-error {
@@ -555,48 +547,62 @@ button:active {
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 15px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    text-align: left;
 }
 
 .dca-note {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #666;
     margin-top: 12px;
     font-style: italic;
+    text-align: left;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
     .container {
-        margin: 20px auto;
-        padding: 20px;
+        margin: 12px;
+        padding: 20px 16px;
     }
-    
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
     .summary-grid,
     .profit-loss-grid {
         grid-template-columns: 1fr;
     }
-    
+
+    .column-headers {
+        display: none; /* placeholders carry context on mobile */
+    }
+
+    .stock-row {
+        flex-wrap: wrap;
+    }
+
+    .stock-row input {
+        flex: 1 1 calc(50% - 10px);
+    }
+
+    .stock-row input[name="amount"] {
+        flex: 1 1 100%;
+    }
+
+    .delete-row {
+        flex: 0 0 36px;
+        align-self: flex-start;
+    }
+
     .input-type-selector {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
-    
+
     .radio-option {
         justify-content: center;
-    }
-    
-    .column-headers {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .stock-row {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .stock-row input {
-        width: 100%;
     }
 }

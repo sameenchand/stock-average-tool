@@ -6,6 +6,13 @@ document.addEventListener("DOMContentLoaded", function () {
         return n.toFixed(2);
     }
 
+    function setAutoFilled(input, value) {
+        input.value = value;
+        input.classList.remove('autofilled');
+        void input.offsetWidth; // force reflow so animation restarts
+        input.classList.add('autofilled');
+    }
+
     function copyToClipboard(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text);
@@ -54,7 +61,8 @@ document.addEventListener("DOMContentLoaded", function () {
             rows.forEach(function (row) {
                 data.push({
                     price:    row.querySelector('input[name="price"]').value,
-                    quantity: row.querySelector('input[name="quantity"]').value
+                    quantity: row.querySelector('input[name="quantity"]').value,
+                    amount:   row.querySelector('input[name="amount"]').value
                 });
             });
             localStorage.setItem('avgCalc_rows', JSON.stringify(data));
@@ -69,9 +77,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 const existing = stockInputs.querySelectorAll('.stock-row');
                 existing.forEach(function (r) { r.remove(); });
                 data.forEach(function (item) {
-                    addStockRow(item.price, item.quantity);
+                    addStockRow(item.price, item.quantity, item.amount);
                 });
             } catch (e) { /* ignore corrupt data */ }
+        }
+
+        function syncRow(row, changed) {
+            const priceEl = row.querySelector('input[name="price"]');
+            const qtyEl   = row.querySelector('input[name="quantity"]');
+            const amtEl   = row.querySelector('input[name="amount"]');
+            const price   = parseFloat(priceEl.value);
+            const qty     = parseFloat(qtyEl.value);
+            const amt     = parseFloat(amtEl.value);
+
+            if (changed === 'quantity' && price > 0 && qty >= 0) {
+                setAutoFilled(amtEl, (price * qty).toFixed(2));
+            } else if (changed === 'amount' && price > 0 && amt >= 0) {
+                setAutoFilled(qtyEl, (amt / price).toFixed(4).replace(/\.?0+$/, ''));
+            } else if (changed === 'price') {
+                if (qtyEl.value !== '' && qty >= 0 && price > 0) {
+                    setAutoFilled(amtEl, (price * qty).toFixed(2));
+                } else if (amtEl.value !== '' && amt >= 0 && price > 0) {
+                    setAutoFilled(qtyEl, (amt / price).toFixed(4).replace(/\.?0+$/, ''));
+                }
+            }
         }
 
         function calculateAverage() {
@@ -108,17 +137,26 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // Recalculate whenever any input inside stock-inputs changes
-        stockInputs.addEventListener('input', calculateAverage);
+        // Sync price/quantity/amount bidirectionally, then recalculate
+        stockInputs.addEventListener('input', function (e) {
+            const row = e.target.closest('.stock-row');
+            if (!row) return;
+            const name = e.target.getAttribute('name');
+            if (name === 'price' || name === 'quantity' || name === 'amount') {
+                syncRow(row, name);
+            }
+            calculateAverage();
+        });
 
         // Add a new stock row (optionally pre-filled)
-        function addStockRow(price, quantity) {
+        function addStockRow(price, quantity, amount) {
             const row = document.createElement('div');
             row.classList.add('stock-row');
             row.innerHTML = `
-                <input type="number" name="price"    placeholder="Enter Price" step="0.01" min="0" value="${price || ''}">
-                <input type="number" name="quantity" placeholder="Enter Quantity"            min="0" value="${quantity || ''}">
-                <button type="button" class="delete-row">Delete</button>
+                <input type="number" name="price"    placeholder="Price"    step="0.01" min="0" value="${price    || ''}">
+                <input type="number" name="quantity" placeholder="Quantity"            min="0" value="${quantity || ''}">
+                <input type="number" name="amount"   placeholder="Amount"   step="0.01" min="0" value="${amount  || ''}">
+                <button type="button" class="delete-row" title="Remove row">&times;</button>
             `;
             stockInputs.appendChild(row);
         }
@@ -135,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         const addBtn = document.getElementById('add-stock-button');
-        if (addBtn) addBtn.addEventListener('click', function () { addStockRow('', ''); });
+        if (addBtn) addBtn.addEventListener('click', function () { addStockRow('', '', ''); });
 
         const avgCopyBtn = document.getElementById('avg-copy-btn');
         if (avgCopyBtn) avgCopyBtn.addEventListener('click', function () {
@@ -160,8 +198,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const rows = stockInputs.querySelectorAll('.stock-row');
             rows.forEach(function (row, i) {
                 if (i === 0) {
-                    row.querySelector('input[name="price"]').value = '';
+                    row.querySelector('input[name="price"]').value    = '';
                     row.querySelector('input[name="quantity"]').value = '';
+                    row.querySelector('input[name="amount"]').value   = '';
                 } else {
                     row.remove();
                 }
